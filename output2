@@ -1,0 +1,87 @@
+1.	Parse the Input and Decode Y-Values:
+	•	Convert each y value from the given base to base-10 to get a list of (x, y) pairs.
+	2.	Identify Points (x, y):
+	•	Extract each root and represent it as an (x, y) pair where x is the key and y is the decoded value.
+	3.	Apply Lagrange Interpolation:
+	•	Use Lagrange Interpolation with the first 7 points to calculate the polynomial coefficients. The constant term  c  will be the polynomial’s  y -intercept (i.e.,  f(0) ).
+
+Step-by-Step Solution for Test Case 2
+
+1. Decoding the Y-Values
+
+Let’s decode each of the values in the JSON.
+
+	1.	Decode each root:
+	•	Root “1”: Base 6, Value “13444211440455345511” → y = 4319096222692855
+	•	Root “2”: Base 15, Value “aed7015a346d63” → y = 2193571890531
+	•	Root “3”: Base 15, Value “6aeeb69631c227c” → y = 17334316648636636
+	•	Root “4”: Base 16, Value “e1b5e05623d881f” → y = 101248228038809087
+	•	Root “5”: Base 8, Value “316034514573652620673” → y = 43722852225490715
+	•	Root “6”: Base 3, Value “2122212201122002221120200210011020220200” → y = 3125013211696603339122
+	•	Root “7”: Base 3, Value “20120221122211000100210021102001201112121” → y = 2540736622520919339097
+	•	Root “8”: Base 6, Value “20220554335330240002224253” → y = 10460353203063292955
+	•	Root “9”: Base 12, Value “45153788322a1255483” → y = 2172024363944723955
+	•	Root “10”: Base 7, Value “1101613130313526312514143” → y = 1201262741112590949
+	2.	Extract the Points (x, y):
+	•	Points after decoding:
+	•	(1, 4319096222692855)
+	•	(2, 2193571890531)
+	•	(3, 17334316648636636)
+	•	(4, 101248228038809087)
+	•	(5, 43722852225490715)
+	•	(6, 3125013211696603339122)
+	•	(7, 2540736622520919339097)
+
+2. Lagrange Interpolation Formula
+
+With the points (x_1, y_1), (x_2, y_2), …, (x_7, y_7), the polynomial function  f(x)  is calculated as:
+
+f(x) = y_1 \frac{(x - x_2)(x - x_3)…(x - x_7)}{(x_1 - x_2)(x_1 - x_3)…(x_1 - x_7)} + \dots + y_7 \frac{(x - x_1)(x - x_2)…(x - x_6)}{(x_7 - x_1)(x_7 - x_2)…(x_7 - x_6)}
+
+
+Setting  x = 0  gives the constant term  c  as  f(0) .
+
+C++ Code to Solve Test Case 2
+
+Here’s a C++ implementation of Lagrange Interpolation for these points.
+
+#include <iostream>
+#include <vector>
+#include <utility>
+using namespace std;
+
+// Function to calculate Lagrange Interpolation
+double lagrangeInterpolation(const vector<pair<int, long long>>& points, int x) {
+    double result = 0;
+    int n = points.size();
+
+    for (int i = 0; i < n; i++) {
+        double term = points[i].second;  // Start with y_i
+        for (int j = 0; j < n; j++) {
+            if (j != i) {
+                term *= (x - points[j].first) / (double)(points[i].first - points[j].first);
+            }
+        }
+        result += term;
+    }
+    return result;
+}
+
+int main() {
+    // Points for the polynomial based on decoded values
+    vector<pair<int, long long>> points = {
+        {1, 4319096222692855},
+        {2, 2193571890531},
+        {3, 17334316648636636},
+        {4, 101248228038809087},
+        {5, 43722852225490715},
+        {6, 3125013211696603339122},
+        {7, 2540736622520919339097}
+    };
+
+    int x = 0; // We are looking for f(0), the constant term
+    double constantTerm = lagrangeInterpolation(points, x);
+
+    cout << "Constant term (c) = " << constantTerm << endl;
+    return 0;
+}
